@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-heading: 'Cinzel', 'Playfair Display', serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #faf7f2;
+    color: #1f242e;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: 0.02em;
+  }
+
+  .font-serif-sub {
+    font-family: var(--font-serif);
+  }
+}
+
+/* Light / Beige Luxury Stone Styling Utilities */
+.stone-bg-beige {
+  background-color: #faf7f2;
+}
+
+.stone-card-light {
+  background-color: #ffffff;
+  border: 1px solid #e7dfd3;
+}
+
+.stone-card-warm {
+  background: linear-gradient(135deg, #ffffff 0%, #f7f3ec 100%);
+  border: 1px solid #e2d7c5;
+}
+
+.stone-sandstone-light {
+  background: linear-gradient(135deg, #f6f0e6 0%, #ede3d3 100%);
+  border: 1px solid #dccfbe;
+}
+
+.stone-gradient-gold {
+  background: linear-gradient(135deg, #c5a059 0%, #a87e2b 100%);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #996e1a 0%, #b88628 50%, #825b12 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stone-border {
+  border-color: #e5ded2;
+}
+
+.stone-glass-light {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Custom scrollbar for light theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f0e8;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4c8b6;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b88628;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Aston Stone Corporation",
+  "description": "Premium Rajasthan natural stone, marble, granite, sandstone, red sandstone, limestone, architectural stone and custom marble sculptures from Rajasthan, India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

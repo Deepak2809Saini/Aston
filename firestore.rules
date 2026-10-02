@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'developmentwork2k24@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+        data.uid is string && data.uid.size() <= 128 &&
+        data.email is string && data.email.size() <= 150 &&
+        (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 150)) &&
+        (!('companyName' in data) || (data.companyName is string && data.companyName.size() <= 150)) &&
+        (!('country' in data) || (data.country is string && data.country.size() <= 100)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 50)) &&
+        (!('role' in data) || (data.role in ['customer', 'admin']));
+    }
+
+    function isValidEnquiry(data) {
+      return data.keys().hasAll(['fullName', 'userEmail', 'country', 'enquiryType']) &&
+        data.fullName is string && data.fullName.size() <= 150 &&
+        data.userEmail is string && data.userEmail.size() <= 150 &&
+        data.country is string && data.country.size() <= 100 &&
+        data.enquiryType is string && data.enquiryType in ['quote', 'export', 'sample', 'sculpture', 'custom_portrait', 'general'] &&
+        (!('companyName' in data) || (data.companyName is string && data.companyName.size() <= 150)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 50)) &&
+        (!('productCategory' in data) || (data.productCategory is string && data.productCategory.size() <= 100)) &&
+        (!('productName' in data) || (data.productName is string && data.productName.size() <= 150)) &&
+        (!('quantity' in data) || (data.quantity is string && data.quantity.size() <= 100)) &&
+        (!('dimensions' in data) || (data.dimensions is string && data.dimensions.size() <= 150)) &&
+        (!('finish' in data) || (data.finish is string && data.finish.size() <= 100)) &&
+        (!('projectType' in data) || (data.projectType is string && data.projectType.size() <= 100)) &&
+        (!('destinationPort' in data) || (data.destinationPort is string && data.destinationPort.size() <= 150)) &&
+        (!('message' in data) || (data.message is string && data.message.size() <= 5000)) &&
+        (!('referenceImageUrl' in data) || (data.referenceImageUrl is string && data.referenceImageUrl.size() <= 2000)) &&
+        (!('status' in data) || (data.status in ['pending', 'in_review', 'quoted', 'completed'])) &&
+        (!('userId' in data) || (data.userId is string && data.userId.size() <= 128));
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming());
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin()) && isValidUser(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Enquiries, Quotes & Custom Sculpture commissions
+    match /enquiries/{enquiryId} {
+      allow create: if isValidId(enquiryId) && isValidEnquiry(incoming()) && (
+        !isSignedIn() || incoming().userId == request.auth.uid || !('userId' in incoming())
+      );
+      allow get: if (isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin()));
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && isValidEnquiry(incoming()) && (
+        isAdmin() || (
+          resource.data.userId == request.auth.uid &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['message', 'quantity', 'dimensions', 'finish'])
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Admins list
+    match /admins/{userId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+  }
+}

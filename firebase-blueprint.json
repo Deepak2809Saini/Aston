@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile for Aston Stone Corporation client portal",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user's unique Firebase auth ID" },
+        "email": { "type": "string", "description": "User's email address" },
+        "displayName": { "type": "string", "description": "Full name of the user" },
+        "companyName": { "type": "string", "description": "User's organization or business" },
+        "country": { "type": "string", "description": "User's country" },
+        "phone": { "type": "string", "description": "Phone or WhatsApp contact" },
+        "role": { "type": "string", "description": "Role: customer or admin", "enum": ["customer", "admin"] },
+        "createdAt": { "type": "string", "description": "Timestamp when the user registered" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "B2B quote inquiry or sample request for natural stone or sculpture",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique inquiry ID" },
+        "userId": { "type": "string", "description": "User UID who submitted the enquiry" },
+        "userEmail": { "type": "string", "description": "Email of requester" },
+        "fullName": { "type": "string", "description": "Requester contact name" },
+        "companyName": { "type": "string", "description": "Company or studio name" },
+        "country": { "type": "string", "description": "Destination country" },
+        "phone": { "type": "string", "description": "WhatsApp or phone number" },
+        "enquiryType": { "type": "string", "description": "Type of request", "enum": ["quote", "export", "sample", "sculpture", "custom_portrait", "general"] },
+        "productCategory": { "type": "string", "description": "Stone or sculpture category" },
+        "productName": { "type": "string", "description": "Specific stone or sculpture" },
+        "quantity": { "type": "string", "description": "Estimated quantity or area (e.g. sq ft / containers / pieces)" },
+        "dimensions": { "type": "string", "description": "Required thickness or size specs" },
+        "finish": { "type": "string", "description": "Required surface finish (polished, honed, sandblasted, etc.)" },
+        "projectType": { "type": "string", "description": "Residential, commercial, hotel, religious, etc." },
+        "destinationPort": { "type": "string", "description": "Destination port or city for logistics" },
+        "message": { "type": "string", "description": "Detailed project requirements or instructions" },
+        "referenceImageUrl": { "type": "string", "description": "Optional reference image URL or notes" },
+        "status": { "type": "string", "description": "Status of the enquiry", "enum": ["pending", "in_review", "quoted", "completed"] },
+        "createdAt": { "type": "string", "description": "Server timestamp of submission" }
+      },
+      "required": ["fullName", "userEmail", "country", "enquiryType"]
+    },
+    "AdminDoc": {
+      "title": "AdminDoc",
+      "description": "Marker document in admins collection verifying admin privileges",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "Email of admin" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Individual customer or staff profile"
+    },
+    "/enquiries/{enquiryId}": {
+      "schema": { "$ref": "#/entities/Enquiry" },
+      "description": "Global collection of stone inquiries, RFQs and sculpture commissions"
+    },
+    "/admins/{userId}": {
+      "schema": { "$ref": "#/entities/AdminDoc" },
+      "description": "Authoritative list of administrator UIDs"
+    }
+  }
+}
